@@ -1,11 +1,36 @@
-class RiskEngine:
+"""
+Risk Engine
 
-    def score(self, plan):
+Calculates the risk score associated
+with an Action.
+"""
 
-        joined = " ".join(plan).lower()
+from models.action import Action
+from runtime.base_engine import BaseEngine
 
-        if "delete" in joined:
 
-            return 95
+class RiskEngine(BaseEngine):
+    """Assigns a risk score to an action."""
 
-        return 15
+    def evaluate(self, action: Action) -> Action:
+
+        intent = action.intent
+
+        if intent == "delete":
+            action.risk_score = 95
+
+        elif intent == "send_email":
+            action.risk_score = 55
+
+        elif intent == "summarize":
+            action.risk_score = 15
+
+        elif intent == "search":
+            action.risk_score = 10
+
+        else:
+            action.risk_score = 25
+
+        action.approval_required = action.risk_score >= 70
+
+        return action

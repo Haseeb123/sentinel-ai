@@ -1,14 +1,11 @@
+"""
+API Request Schemas
+"""
+
 from pydantic import BaseModel
-from typing import List
+
 
 class TaskRequest(BaseModel):
+    """Incoming user request."""
+
     user_input: str
-
-class TaskStep(BaseModel):
-    step: str
-
-class GovernanceResult(BaseModel):
-    allowed: bool
-    risk_score: int
-    approval_required: bool
-    message: str

@@ -1,0 +1,22 @@
+{
+    "delete": {
+        "allowed": false,
+        "approval_required": true
+    },
+    "send_email": {
+        "allowed": true,
+        "approval_required": true
+    },
+    "summarize": {
+        "allowed": true,
+        "approval_required": false
+    },
+    "search": {
+        "allowed": true,
+        "approval_required": false
+    },
+    "general": {
+        "allowed": true,
+        "approval_required": false
+    }
+}

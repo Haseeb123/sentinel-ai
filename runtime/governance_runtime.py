@@ -1,26 +1,57 @@
-from runtime.risk_engine import RiskEngine
+"""
+Governance Runtime
+"""
+
+from models.action import Action
+from models.decision import Decision
+
+from runtime.audit_engine import AuditEngine
 from runtime.policy_engine import PolicyEngine
+from runtime.risk_engine import RiskEngine
 
 
 class GovernanceRuntime:
 
     def __init__(self):
 
-        self.risk = RiskEngine()
+        self.engines = [
 
-        self.policy = PolicyEngine()
+            RiskEngine(),
 
-    def evaluate(self, plan):
+            PolicyEngine(),
 
-        risk = self.risk.score(plan)
+            AuditEngine(),
 
-        policy = self.policy.check(plan)
+        ]
 
-        return {
+    def process(self, action: Action) -> Decision:
 
-            "risk_score": risk,
+        for engine in self.engines:
 
-            "allowed": policy,
+            action = engine.evaluate(action)
 
-            "approval_required": risk > 70
-        }
+        if not action.policy_allowed:
+
+            return Decision(
+
+                allowed=False,
+
+                reason="Blocked by governance policy.",
+
+                approval_required=True,
+
+                risk_score=action.risk_score
+
+            )
+
+        return Decision(
+
+            allowed=True,
+
+            reason="Approved",
+
+            approval_required=action.approval_required,
+
+            risk_score=action.risk_score
+
+        )

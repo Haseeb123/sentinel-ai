@@ -1,13 +1,17 @@
 """
-Governance Decision Model.
+Decision Model
+
+Represents the governance decision
+returned after evaluating an Action.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from pydantic import BaseModel, Field
 
 
 class Decision(BaseModel):
+    """Final governance decision."""
 
     allowed: bool
 
@@ -17,4 +21,6 @@ class Decision(BaseModel):
 
     risk_score: int
 
-    evaluated_at: datetime = Field(default_factory=datetime.utcnow)
+    evaluated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )

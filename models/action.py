@@ -5,17 +5,21 @@ Represents one executable action travelling
 through the SentinelAI Governance Runtime.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
 
 class Action(BaseModel):
+    """Represents a governed action inside SentinelAI."""
 
     id: str = Field(default_factory=lambda: str(uuid4()))
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     user_request: str
 
@@ -23,7 +27,7 @@ class Action(BaseModel):
 
     tool: str | None = None
 
-    parameters: dict = Field(default_factory=dict)
+    parameters: dict[str, Any] = Field(default_factory=dict)
 
     risk_score: int = 0
 

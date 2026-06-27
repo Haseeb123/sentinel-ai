@@ -1,16 +1,33 @@
+"""
+Audit Engine
+"""
+
 import json
-from datetime import datetime
+from pathlib import Path
+
+from models.audit import AuditRecord
+from models.action import Action
+
+from observability.logger import logger
+
 
 class AuditEngine:
 
-    def log(self, event):
+    OUTPUT = Path("data/audit_logs/audit.jsonl")
 
-        log = {
+    def evaluate(self, action: Action) -> Action:
 
-            "timestamp": str(datetime.now()),
+        record = AuditRecord(
+            action_id=action.id,
+            engine="AuditEngine",
+            message=f"Action evaluated ({action.intent})"
+        )
 
-            "event": event
+        self.OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
-        }
+        with open(self.OUTPUT, "a", encoding="utf8") as file:
+            file.write(record.model_dump_json() + "\n")
 
-        print(log)
+        logger.info(record.message)
+
+        return action
