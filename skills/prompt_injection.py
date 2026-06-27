@@ -1,0 +1,3 @@
+class PromptInjectionSkill:
+
+    pass
