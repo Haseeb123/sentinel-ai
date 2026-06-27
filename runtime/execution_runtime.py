@@ -7,13 +7,11 @@ Coordinates execution using the Tool Registry.
 from agents.execution_agent import ExecutionAgent
 from models.execution import ExecutionResult
 from runtime.execution_context import ExecutionContext
-
-from tools.tool_registry import ToolRegistry
-
-from tools.knowledge_tool import KnowledgeTool
-from tools.policy_tool import PolicyTool
-from tools.pdf_reader_tool import PDFReaderTool
 from tools.file_writer_tool import FileWriterTool
+from tools.knowledge_tool import KnowledgeTool
+from tools.pdf_reader_tool import PDFReaderTool
+from tools.policy_tool import PolicyTool
+from tools.tool_registry import ToolRegistry
 
 
 class ExecutionRuntime:
@@ -32,10 +30,7 @@ class ExecutionRuntime:
         self.registry.register(PDFReaderTool())
         self.registry.register(FileWriterTool())
 
-    def execute(
-        self,
-        context: ExecutionContext
-    ) -> ExecutionResult:
+    def execute(self, context: ExecutionContext) -> ExecutionResult:
 
         context = self.agent.choose_tool(context)
 

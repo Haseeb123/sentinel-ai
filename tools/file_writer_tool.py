@@ -22,16 +22,11 @@ class FileWriterTool(BaseTool):
 
     OUTPUT_DIRECTORY = Path("outputs")
 
-    def execute(
-        self,
-        context: ExecutionContext
-    ) -> ExecutionResult:
+    def execute(self, context: ExecutionContext) -> ExecutionResult:
 
         start = time.perf_counter()
 
-        self.OUTPUT_DIRECTORY.mkdir(
-            exist_ok=True
-        )
+        self.OUTPUT_DIRECTORY.mkdir(exist_ok=True)
 
         filename = context.action.parameters.get(
             "filename",
@@ -50,9 +45,7 @@ class FileWriterTool(BaseTool):
             encoding="utf-8",
         )
 
-        elapsed = (
-            time.perf_counter() - start
-        ) * 1000
+        elapsed = (time.perf_counter() - start) * 1000
 
         return ExecutionResult(
             success=True,

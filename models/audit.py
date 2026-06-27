@@ -18,6 +18,4 @@ class AuditRecord(BaseModel):
 
     message: str
 
-    timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

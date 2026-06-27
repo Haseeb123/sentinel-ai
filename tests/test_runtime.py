@@ -1,5 +1,4 @@
 from agents.planner_agent import PlannerAgent
-
 from runtime.governance_runtime import GovernanceRuntime
 
 
@@ -9,9 +8,7 @@ def test_runtime():
 
     runtime = GovernanceRuntime()
 
-    action = planner.create_action(
-        "Summarize report"
-    )
+    action = planner.create_action("Summarize report")
 
     decision = runtime.process(action)
 

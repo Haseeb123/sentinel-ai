@@ -20,9 +20,7 @@ class ExecutionContext(BaseModel):
 
     run_id: str = Field(default_factory=lambda: str(uuid4()))
 
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     action: Action
 

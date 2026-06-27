@@ -1,10 +1,9 @@
-from runtime.execution_context import ExecutionContext
 from models.action import Action
 from models.decision import Decision
-
-from tools.tool_registry import ToolRegistry
+from runtime.execution_context import ExecutionContext
 from tools.knowledge_tool import KnowledgeTool
 from tools.policy_tool import PolicyTool
+from tools.tool_registry import ToolRegistry
 
 
 def test_registry_register():
@@ -28,10 +27,7 @@ def test_registry_count():
 
 def test_knowledge_tool():
 
-    action = Action(
-        user_request="Summarize company handbook",
-        intent="summarize"
-    )
+    action = Action(user_request="Summarize company handbook", intent="summarize")
 
     decision = Decision(
         allowed=True,

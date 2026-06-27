@@ -23,6 +23,4 @@ class ExecutionResult(BaseModel):
 
     execution_time_ms: float
 
-    timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

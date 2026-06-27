@@ -24,10 +24,7 @@ class PDFReaderTool(BaseTool):
 
         self.loader = DocumentLoader()
 
-    def execute(
-        self,
-        context: ExecutionContext
-    ) -> ExecutionResult:
+    def execute(self, context: ExecutionContext) -> ExecutionResult:
 
         start = time.perf_counter()
 
@@ -46,9 +43,7 @@ class PDFReaderTool(BaseTool):
 
             content = self.loader.load(file_path)
 
-            elapsed = (
-                time.perf_counter() - start
-            ) * 1000
+            elapsed = (time.perf_counter() - start) * 1000
 
             return ExecutionResult(
                 success=True,
@@ -59,9 +54,7 @@ class PDFReaderTool(BaseTool):
 
         except Exception as exc:
 
-            elapsed = (
-                time.perf_counter() - start
-            ) * 1000
+            elapsed = (time.perf_counter() - start) * 1000
 
             return ExecutionResult(
                 success=False,

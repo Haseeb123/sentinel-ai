@@ -1,36 +1,35 @@
 """
 Risk Engine
 
-Calculates the risk score associated
-with an Action.
+Calculates a risk score for an action.
 """
 
-from models.action import Action
+from config.thresholds import HIGH_RISK_SCORE, LOW_RISK_SCORE
 from runtime.base_engine import BaseEngine
 
 
 class RiskEngine(BaseEngine):
-    """Assigns a risk score to an action."""
 
-    def evaluate(self, action: Action) -> Action:
+    def evaluate(self, action):
 
-        intent = action.intent
+        text = action.user_request.lower()
 
-        if intent == "delete":
-            action.risk_score = 95
+        high_risk_keywords = [
+            "delete",
+            "erase",
+            "remove",
+            "shutdown",
+            "drop",
+        ]
 
-        elif intent == "send_email":
-            action.risk_score = 55
+        if any(keyword in text for keyword in high_risk_keywords):
 
-        elif intent == "summarize":
-            action.risk_score = 15
+            action.risk_score = HIGH_RISK_SCORE
 
-        elif intent == "search":
-            action.risk_score = 10
+            action.approval_required = True
 
         else:
-            action.risk_score = 25
 
-        action.approval_required = action.risk_score >= 70
+            action.risk_score = LOW_RISK_SCORE
 
         return action

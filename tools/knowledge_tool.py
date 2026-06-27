@@ -21,10 +21,7 @@ class KnowledgeTool(BaseTool):
 
     requires_approval = False
 
-    def execute(
-        self,
-        context: ExecutionContext
-    ) -> ExecutionResult:
+    def execute(self, context: ExecutionContext) -> ExecutionResult:
 
         start = time.perf_counter()
 

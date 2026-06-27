@@ -1,14 +1,10 @@
 from models.action import Action
-
 from runtime.policy_engine import PolicyEngine
 
 
 def test_delete_blocked():
 
-    action = Action(
-        user_request="Delete",
-        intent="delete"
-    )
+    action = Action(user_request="Delete", intent="delete")
 
     engine = PolicyEngine()
 

@@ -1,21 +1,34 @@
 """
-SentinelAI Application Entry Point
+SentinelAI Application
 
-This module initializes the FastAPI application and exposes the REST API
-for interacting with the SentinelAI Governance Runtime.
+FastAPI entry point for the SentinelAI Governance Runtime.
 """
 
 from fastapi import FastAPI
 
+from utils.logger import get_logger
+
 from backend.config import settings
 from backend.schemas import TaskRequest
-from backend.responses import TaskResponse, Metadata
+from backend.responses import (
+    TaskResponse,
+    Metadata,
+)
 
 from agents.planner_agent import PlannerAgent
+from agents.planner_agent_llm import PlannerAgentLLM
 
 from runtime.governance_runtime import GovernanceRuntime
 from runtime.execution_runtime import ExecutionRuntime
 from runtime.execution_context import ExecutionContext
+from runtime.plan_governance import PlanGovernance
+
+
+# -----------------------------------------------------------------------------
+# Logger
+# -----------------------------------------------------------------------------
+
+logger = get_logger(__name__)
 
 
 # -----------------------------------------------------------------------------
@@ -25,16 +38,20 @@ from runtime.execution_context import ExecutionContext
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.VERSION,
-    description="SentinelAI - Governance Runtime for Safe AI Agents"
 )
 
+
 # -----------------------------------------------------------------------------
-# Initialize Components
+# Components
 # -----------------------------------------------------------------------------
 
-planner = PlannerAgent()
+legacy_planner = PlannerAgent()
+
+llm_planner = PlannerAgentLLM()
 
 governance_runtime = GovernanceRuntime()
+
+plan_governance = PlanGovernance()
 
 execution_runtime = ExecutionRuntime()
 
@@ -45,95 +62,129 @@ execution_runtime = ExecutionRuntime()
 
 @app.get("/")
 async def root():
-    """
-    Root endpoint.
-    """
 
     return {
         "application": settings.APP_NAME,
         "version": settings.VERSION,
-        "status": "running"
+        "status": "running",
     }
 
 
 # -----------------------------------------------------------------------------
-# Health Check
+# Health Endpoint
 # -----------------------------------------------------------------------------
 
 @app.get("/health")
 async def health():
-    """
-    Health check endpoint.
-    """
 
     return {
         "status": "healthy",
-        "runtime_version": settings.VERSION
+        "runtime_version": settings.VERSION,
     }
 
 
 # -----------------------------------------------------------------------------
-# Main Task Endpoint
+# Main Endpoint
 # -----------------------------------------------------------------------------
 
 @app.post(
     "/run-task",
-    response_model=TaskResponse
+    response_model=TaskResponse,
 )
-async def run_task(request: TaskRequest):
+async def run_task(
+    request: TaskRequest,
+):
     """
-    Main pipeline.
+    Complete SentinelAI execution pipeline.
 
     User Request
         ↓
-    Planner Agent
+    Legacy Planner
         ↓
     Governance Runtime
+        ↓
+    Gemini Planner
+        ↓
+    Plan Governance
         ↓
     Execution Runtime
         ↓
     Response
     """
 
-    # -------------------------------------------------------------
-    # Step 1 — Planning
-    # -------------------------------------------------------------
-
-    action = planner.create_action(request.user_input)
+    logger.info(f"Received request: {request.user_input}")
 
     # -------------------------------------------------------------
-    # Step 2 — Governance
+    # Legacy Planner
     # -------------------------------------------------------------
 
-    decision = governance_runtime.process(action)
+    action = legacy_planner.create_action(
+        request.user_input
+    )
 
-    # -------------------------------------------------------------
-    # Step 3 — Create Execution Context
-    # -------------------------------------------------------------
-
-    context = ExecutionContext(
-        action=action,
-        decision=decision,
+    decision = governance_runtime.process(
+        action
     )
 
     # -------------------------------------------------------------
-    # Step 4 — Execute (Only if Allowed)
+    # Gemini Planner
     # -------------------------------------------------------------
 
-    execution_result = None
+    plan = llm_planner.create_plan(
+        request.user_input
+    )
 
-    if decision.allowed:
-        execution_result = execution_runtime.execute(context)
+    plan_decision = plan_governance.evaluate(
+        plan
+    )
+
+    logger.info(
+        f"Governance allowed={decision.allowed}, "
+        f"Plan allowed={plan_decision.allowed}"
+    )
+
+    execution = None
 
     # -------------------------------------------------------------
-    # Step 5 — Return Response
+    # Execute
+    # -------------------------------------------------------------
+
+    if decision.allowed and plan_decision.allowed:
+
+        context = ExecutionContext(
+            action=action,
+            decision=decision,
+        )
+
+        execution = execution_runtime.execute(
+            context
+        )
+
+    else:
+
+        logger.warning(
+            "Execution blocked by governance."
+        )
+
+    logger.info("Task completed successfully.")
+
+    # -------------------------------------------------------------
+    # Response
     # -------------------------------------------------------------
 
     return TaskResponse(
+
         action=action,
+
+        plan=plan,
+
         decision=decision,
-        execution=execution_result,
+
+        plan_decision=plan_decision,
+
+        execution=execution,
+
         metadata=Metadata(
-            runtime_version=settings.VERSION
-        )
+            runtime_version=settings.VERSION,
+        ),
     )

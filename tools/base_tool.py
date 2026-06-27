@@ -4,8 +4,8 @@ Base Tool Interface
 
 from abc import ABC, abstractmethod
 
-from runtime.execution_context import ExecutionContext
 from models.execution import ExecutionResult
+from runtime.execution_context import ExecutionContext
 
 
 class BaseTool(ABC):
@@ -22,10 +22,7 @@ class BaseTool(ABC):
     requires_approval: bool = False
 
     @abstractmethod
-    def execute(
-        self,
-        context: ExecutionContext
-    ) -> ExecutionResult:
+    def execute(self, context: ExecutionContext) -> ExecutionResult:
         """
         Execute the tool.
         """

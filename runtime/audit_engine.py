@@ -5,9 +5,8 @@ Audit Engine
 import json
 from pathlib import Path
 
-from models.audit import AuditRecord
 from models.action import Action
-
+from models.audit import AuditRecord
 from observability.logger import logger
 
 
@@ -20,7 +19,7 @@ class AuditEngine:
         record = AuditRecord(
             action_id=action.id,
             engine="AuditEngine",
-            message=f"Action evaluated ({action.intent})"
+            message=f"Action evaluated ({action.intent})",
         )
 
         self.OUTPUT.parent.mkdir(parents=True, exist_ok=True)

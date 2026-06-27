@@ -21,6 +21,4 @@ class Decision(BaseModel):
 
     risk_score: int
 
-    evaluated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    evaluated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

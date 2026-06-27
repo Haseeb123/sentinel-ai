@@ -25,10 +25,7 @@ class PolicyTool(BaseTool):
 
     POLICY_FILE = Path("policies/governance_policy.json")
 
-    def execute(
-        self,
-        context: ExecutionContext
-    ) -> ExecutionResult:
+    def execute(self, context: ExecutionContext) -> ExecutionResult:
 
         start = time.perf_counter()
 

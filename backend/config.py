@@ -1,22 +1,23 @@
 """
-Global configuration for SentinelAI.
+Application configuration.
 """
 
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
+from pydantic_settings import BaseSettings
 
 
-class Settings:
+class Settings(BaseSettings):
 
-    APP_NAME = "SentinelAI"
+    APP_NAME: str = "SentinelAI"
 
-    VERSION = "0.1.0"
+    VERSION: str = "0.4.0"
 
-    DEBUG = True
+    GEMINI_API_KEY: str
 
-    API_PREFIX = "/api"
+    MODEL_NAME: str = "gemini-2.5-flash"
+
+    class Config:
+
+        env_file = ".env"
 
 
 settings = Settings()
